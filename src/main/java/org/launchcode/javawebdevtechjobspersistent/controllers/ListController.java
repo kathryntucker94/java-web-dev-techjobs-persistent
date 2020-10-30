@@ -1,6 +1,8 @@
 package org.launchcode.javawebdevtechjobspersistent.controllers;
 
+import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
@@ -33,13 +35,24 @@ public class ListController {
     public ListController () {
 
         columnChoices.put("all", "All");
-        columnChoices.put("employer", "Employer");
+        columnChoices.put("employer", "employer");
         columnChoices.put("skill", "Skill");
 
     }
 
     @RequestMapping("")
     public String list(Model model) {
+        Iterable<Job> jobs;
+        Iterable<Employer> employers;
+        Iterable<Skill> skills;
+
+        employers = employerRepository.findAll();
+        skills = skillRepository.findAll();
+        jobs = jobRepository.findAll();
+
+        model.addAttribute("jobs", jobs);
+        model.addAttribute("employers", employers);
+        model.addAttribute("skills", skills);
 
         return "list";
     }
@@ -47,8 +60,15 @@ public class ListController {
     @RequestMapping(value = "jobs")
     public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam String value) {
         Iterable<Job> jobs;
+        Iterable<Employer> employers;
+        Iterable<Skill> skills;
+
+        employers = employerRepository.findAll();
+        skills = skillRepository.findAll();
+
         if (column.toLowerCase().equals("all")){
             jobs = jobRepository.findAll();
+
 
 
             model.addAttribute("title", "All Jobs");
@@ -57,6 +77,9 @@ public class ListController {
             model.addAttribute("title", "Jobs with " + columnChoices.get(column) + ": " + value);
         }
         model.addAttribute("jobs", jobs);
+        model.addAttribute("employers", employers);
+        model.addAttribute("skills", skills);
+
 
 
         return "list-jobs";
